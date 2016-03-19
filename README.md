@@ -1,3 +1,3 @@
-# COMP2068-MongoDemo
+# COMP2068-MongoDemo with Sengrid
 
-A MongoDB Demo Project for COMP2068 @ Georgian College
+Using sengrid to send emails
