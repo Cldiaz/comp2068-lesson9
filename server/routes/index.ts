@@ -1,42 +1,56 @@
 import express = require('express');
 //sengrid account
 var sendgrid = require('sendgrid')('cldiaz', 'testpassword2016');
+import passport = require('passport');
+
 var router = express.Router();
 
 // db references
-var User = require('../models/user');
+import userModel = require('../models/user');
+import User = userModel.User;
 
 /* GET home page. */
 router.get('/', (req: express.Request, res: express.Response, next: any) => {
-    res.render('index', { title: 'Home' });
+    res.render('index', { 
+        title: 'Home', 
+        displayName: req.user ? req.user.displayName : '' });
 });
 
 /* GET product page. */
 router.get('/products', (req: express.Request, res: express.Response, next: any) => {
-    res.render('index', { title: 'Products' });
+    res.render('index', { 
+        title: 'Products',
+        displayName: req.user ? req.user.displayName : ''});
 });
 
 /* GET services page. */
 router.get('/services', (req: express.Request, res: express.Response, next: any) => {
-    res.render('index', { title: 'Services' });
+    res.render('index', { 
+        title: 'Services',
+        displayName: req.user ? req.user.displayName : '' });
 });
 
 /* GET about page. */
 router.get('/about', (req: express.Request, res: express.Response, next: any) => {
-    res.render('index', { title: 'About' });
+    res.render('index', { 
+        title: 'About',
+        displayName: req.user ? req.user.displayName : '' });
 });
 
 /* GET contact page. */
 router.get('/contact', (req: express.Request, res: express.Response, next: any) => {
     req.flash('successmessage', 'Thank You. Your message has been sent.');
     req.flash('errormessage','An Error has occurred.');
-    res.render('contact', { title: 'Contact', messages: null });
+    res.render('contact', { 
+        title: 'Contact', 
+        messages: null,
+        displayName: req.user ? req.user.displayName : '' });
 });
 
 /* Email processing */
 router.post('/contact', (req: express.Request, res: express.Response, next: any) => {
     sendgrid.send({
-        to: 'cindy.liliana.diaz@hotmail.com',
+        to: 'tsiliopoulos@hotmail.com',
         from: req.body.email,
         subject: 'Contact Form Submission',
         text: "This message has been sent from the contact form at [MongoDB Demo]\r\n\r\n" +
@@ -59,5 +73,72 @@ router.post('/contact', (req: express.Request, res: express.Response, next: any)
         });
 });
 
+/* Render Login Page */
+router.get('/login', (req:express.Request, res: express.Response, next:any) => {
+    if(!req.user) {
+        res.render('login', {
+            title: 'Login',
+            messages: req.flash('loginMessage'),
+            displayName: req.user ? req.user.displayName : ''
+        });
+        return;
+    } else {
+        return res.redirect('/users');
+    }
+});
+
+/* Process Login Request */
+router.post('/login', passport.authenticate('local', {
+    successRedirect: '/users',
+    failureRedirect: '/login',
+    failureFlash: true
+}));
+
+/* Render Registration page */
+router.get('/register', (req:express.Request, res: express.Response, next:any) => {
+    if(!req.user) {
+        res.render('register', {
+            title: 'Register',
+            messages: req.flash('registerMessage'),
+            displayName: req.user ? req.user.displayName : ''
+        });
+        return;
+    } else {
+        return res.redirect('/');
+    }
+});
+
+/* Process Registration Request */
+router.post('/register', (req:express.Request, res: express.Response, next:any) => {
+    // attempt to register user
+    User.register(new User(
+       { username: req.body.username,
+         password: req.body.password,
+         email: req.body.email,
+         displayName: req.body.displayName
+       }), req.body.password, (err) => {
+           if(err) {
+               console.log('Error Inserting New Data');
+               if(err.name == 'UserExistsError') {
+               req.flash('registerMessage', 'Registration Error: User Already Exists!');
+               }
+               return res.render('register', {
+                    title: 'Register',
+                    messages: req.flash('registerMessage'),
+                    displayName: req.user ? req.user.displayName : ''
+                });
+           }
+           // if registration is successful
+           return passport.authenticate('local')(req, res, ()=>{
+              res.redirect('/users'); 
+           });
+       });
+});
+
+/* Process Logout Request */
+router.get('/logout', (req:express.Request, res: express.Response) => { 
+    req.logOut();
+    res.redirect('/');
+});
 
 module.exports = router;

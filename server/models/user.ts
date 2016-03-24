@@ -1,5 +1,5 @@
 import mongoose = require('mongoose');
-
+import passportLocalMongoose = require('passport-local-mongoose');
 
 // DEFINE THE OBJECT SCHEMA
 var userSchema = new mongoose.Schema({
@@ -38,6 +38,7 @@ var userSchema = new mongoose.Schema({
 },
     { collection: 'userInfo' });
 
-
+var options = ({missingPasswordError: "Wrong password"});
+userSchema.plugin(passportLocalMongoose, options);
 // MAKE THIS PUBLIC SO THE CONTROLLER CAN SEE IT
 export var User = mongoose.model('User', userSchema);

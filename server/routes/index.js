@@ -2,35 +2,48 @@
 var express = require('express');
 //sengrid account
 var sendgrid = require('sendgrid')('cldiaz', 'testpassword2016');
+var passport = require('passport');
 var router = express.Router();
 // db references
-var User = require('../models/user');
+var userModel = require('../models/user');
+var User = userModel.User;
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    res.render('index', { title: 'Home' });
+    res.render('index', {
+        title: 'Home',
+        displayName: req.user ? req.user.displayName : '' });
 });
 /* GET product page. */
 router.get('/products', function (req, res, next) {
-    res.render('index', { title: 'Products' });
+    res.render('index', {
+        title: 'Products',
+        displayName: req.user ? req.user.displayName : '' });
 });
 /* GET services page. */
 router.get('/services', function (req, res, next) {
-    res.render('index', { title: 'Services' });
+    res.render('index', {
+        title: 'Services',
+        displayName: req.user ? req.user.displayName : '' });
 });
 /* GET about page. */
 router.get('/about', function (req, res, next) {
-    res.render('index', { title: 'About' });
+    res.render('index', {
+        title: 'About',
+        displayName: req.user ? req.user.displayName : '' });
 });
 /* GET contact page. */
 router.get('/contact', function (req, res, next) {
     req.flash('successmessage', 'Thank You. Your message has been sent.');
     req.flash('errormessage', 'An Error has occurred.');
-    res.render('contact', { title: 'Contact', messages: null });
+    res.render('contact', {
+        title: 'Contact',
+        messages: null,
+        displayName: req.user ? req.user.displayName : '' });
 });
 /* Email processing */
 router.post('/contact', function (req, res, next) {
     sendgrid.send({
-        to: 'cindy.liliana.diaz@hotmail.com',
+        to: 'tsiliopoulos@hotmail.com',
         from: req.body.email,
         subject: 'Contact Form Submission',
         text: "This message has been sent from the contact form at [MongoDB Demo]\r\n\r\n" +
@@ -50,6 +63,70 @@ router.post('/contact', function (req, res, next) {
             messages: req.flash('successmessage')
         });
     });
+});
+/* Render Login Page */
+router.get('/login', function (req, res, next) {
+    if (!req.user) {
+        res.render('login', {
+            title: 'Login',
+            messages: req.flash('loginMessage'),
+            displayName: req.user ? req.user.displayName : ''
+        });
+        return;
+    }
+    else {
+        return res.redirect('/users');
+    }
+});
+/* Process Login Request */
+router.post('/login', passport.authenticate('local', {
+    successRedirect: '/users',
+    failureRedirect: '/login',
+    failureFlash: true
+}));
+/* Render Registration page */
+router.get('/register', function (req, res, next) {
+    if (!req.user) {
+        res.render('register', {
+            title: 'Register',
+            messages: req.flash('registerMessage'),
+            displayName: req.user ? req.user.displayName : ''
+        });
+        return;
+    }
+    else {
+        return res.redirect('/');
+    }
+});
+/* Process Registration Request */
+router.post('/register', function (req, res, next) {
+    // attempt to register user
+    User.register(new User({ username: req.body.username,
+        password: req.body.password,
+        email: req.body.email,
+        displayName: req.body.displayName
+    }), req.body.password, function (err) {
+        if (err) {
+            console.log('Error Inserting New Data');
+            if (err.name == 'UserExistsError') {
+                req.flash('registerMessage', 'Registration Error: User Already Exists!');
+            }
+            return res.render('register', {
+                title: 'Register',
+                messages: req.flash('registerMessage'),
+                displayName: req.user ? req.user.displayName : ''
+            });
+        }
+        // if registration is successful
+        return passport.authenticate('local')(req, res, function () {
+            res.redirect('/users');
+        });
+    });
+});
+/* Process Logout Request */
+router.get('/logout', function (req, res) {
+    req.logOut();
+    res.redirect('/');
 });
 module.exports = router;
 
