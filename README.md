@@ -1,3 +1,3 @@
-# COMP2068-MongoDemo with Sengrid
+# COMP2068-MongoDemo Authentication
 
-Using sengrid to send emails
+Add authentication
