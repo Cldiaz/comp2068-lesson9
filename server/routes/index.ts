@@ -1,5 +1,5 @@
 import express = require('express');
-//sengrid account
+//emails
 var sendgrid = require('sendgrid')('xxxx', 'xxxxx');
 import passport = require('passport');
 
