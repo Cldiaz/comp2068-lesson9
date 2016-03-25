@@ -1,4 +1,5 @@
 <% include partials/header.ejs %>
+<% include partials/navbar.ejs %>
      <main class="container">
      <% if (messages.length > 0) { %>
         <div class="alert alert-danger"><%= messages %></div>
@@ -17,6 +18,9 @@
                 </fieldset>
                 <fieldset class="form-group text-right">
                     <input type="submit" class="btn btn-success" value="Log In"/>
+                    <a href="/">
+                        <input type="button" class="btn btn-warning" value="Cancel"/>
+                    </a>
                </fieldset>
             </form>
          </div>

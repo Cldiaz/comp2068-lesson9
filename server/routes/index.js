@@ -1,7 +1,7 @@
 "use strict";
 var express = require('express');
 //sengrid account
-var sendgrid = require('sendgrid')('cldiaz', 'testpassword2016');
+var sendgrid = require('sendgrid')('xxxx', 'xxxxx');
 var passport = require('passport');
 var router = express.Router();
 // db references

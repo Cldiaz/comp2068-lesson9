@@ -18,7 +18,10 @@
             <li><a href="/products">Products</a></li>
             <li><a href="/services">Services</a></li>
             <li><a href="/articles">Articles</a></li>
-            <li><a href="/users">Users</a></li>
+            <% if(displayName){ %>
+                <li><a href="/users">Users</a></li>
+            <% } %>
+            
             <li><a href="/about">About Us</a></li>
             <li><a href="/contact">Contact Us</a></li>
         <% } else if(title == "Products") { %>
@@ -26,7 +29,10 @@
             <li class="active"><a href="/products">Products</a></li>
             <li><a href="/services">Services</a></li>
             <li><a href="/articles">Articles</a></li>
-            <li><a href="/users">Users</a></li>
+            <% if(displayName){ %>
+                <li><a href="/users">Users</a></li>
+            <% } %>
+            
             <li><a href="/about">About Us</a></li>
             <li><a href="/contact">Contact Us</a></li>
         <% } else if(title == "Services") { %>
@@ -34,7 +40,10 @@
             <li><a href="/products">Products</a></li>
             <li class="active"><a href="/services">Services</a></li>
             <li><a href="/articles">Articles</a></li>
-            <li><a href="/users">Users</a></li>
+            <% if(displayName){ %>
+                <li><a href="/users">Users</a></li>
+            <% } %>
+            
             <li><a href="/about">About Us</a></li>
             <li><a href="/contact">Contact Us</a></li>
         <% } else if(title == "Articles") { %>
@@ -42,7 +51,10 @@
             <li><a href="/products">Products</a></li>
             <li><a href="/services">Services</a></li>
             <li class="active"><a href="/articles">Articles</a></li>
-            <li><a href="/users">Users</a></li>
+            <% if(displayName){ %>
+                <li><a href="/users">Users</a></li>
+            <% } %>
+            
             <li><a href="/about">About Us</a></li>
             <li><a href="/contact">Contact Us</a></li>
         <% } else if(title == "Users") { %>
@@ -50,7 +62,10 @@
             <li><a href="/products">Products</a></li>
             <li><a href="/services">Services</a></li>
             <li><a href="/articles">Articles</a></li>
-            <li class="active"><a href="/users">Users</a></li>
+            <% if(displayName){ %>
+                <li class="active"><a href="/users">Users</a></li>
+            <% } %>
+            
             <li><a href="/about">About Us</a></li>
             <li><a href="/contact">Contact Us</a></li>
         <% } else if(title == "About") { %>
@@ -58,7 +73,10 @@
             <li><a href="/products">Products</a></li>
             <li><a href="/services">Services</a></li>
             <li><a href="/articles">Articles</a></li>
-            <li><a href="/users">Users</a></li>
+            <% if(displayName){ %>
+                <li><a href="/users">Users</a></li>
+            <% } %>
+            
             <li class="active"><a href="/about">About Us</a></li>
             <li><a href="/contact">Contact Us</a></li>
          <% } else if(title == "Contact") { %>
@@ -66,9 +84,18 @@
             <li><a href="/products">Products</a></li>
             <li><a href="/services">Services</a></li>
             <li><a href="/articles">Articles</a></li>
-            <li><a href="/users">Users</a></li>
+            <% if(displayName){ %>
+                <li><a href="/users">Users</a></li>
+            <% } %>
+            
             <li><a href="/about">About Us</a></li>
             <li class="active"><a href="/contact">Contact Us</a></li>
+         <% } %>
+         <% if(displayName){ %>
+                <li class="navbar-text"><i class="fa fa-user"></i> Wecome, <%= displayName %></li>
+                <li><a href="/logout"><i class="fa fa-sign-out"></i> Logout</a></li>
+         <% } else { %>
+                <li><a href="/login"><i class="fa fa-sign-in"></i> Login</a></li>
          <% } %>
       </ul>
     </div><!-- /.navbar-collapse -->

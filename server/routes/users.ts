@@ -8,9 +8,17 @@ import userModel = require('../models/user');
 
 import User = userModel.User;
 
+//utility function to check if user is authenticated
+function requireAuth(req: express.Request, res: express.Response, next: any){
+    //check if user is log in
+    if(!req.isAuthenticated()){
+        return res.redirect('/login');
+    }
+    next();
+}
 
 // GET - show main users page - list all the users
-router.get('/', (req: express.Request, res: express.Response, next: any) => {
+router.get('/', requireAuth,(req: express.Request, res: express.Response, next: any) => {
    
     // use the Users model to query the Users collection
     User.find((error, users) => {
@@ -22,21 +30,23 @@ router.get('/', (req: express.Request, res: express.Response, next: any) => {
             // no error, we found a list of users
             res.render('users/index', {
                 title: 'Users',
-                users: users
+                users: users,
+                displayName: req.user ? req.user.displayName : ''
             });
         }
     });
 });
 
 // GET add page - show the blank form
-router.get('/add', function(req: express.Request, res: express.Response, next: any) {
+router.get('/add', requireAuth,(req: express.Request, res: express.Response, next: any)=> {
     res.render('users/add', {
-        title: 'Add a New User'
+        title: 'Add a New User',
+        displayName: req.user ? req.user.displayName : ''
     });
 });
 
 // POST add page - save the new user
-router.post('/add', function(req: express.Request, res: express.Response, next: any) {
+router.post('/add',requireAuth, (req: express.Request, res: express.Response, next: any) => {
     User.create({
         username: req.body.username,
         password: req.body.password,
@@ -55,7 +65,7 @@ router.post('/add', function(req: express.Request, res: express.Response, next: 
 });
 
 // GET edit page - show the current user in the form
-router.get('/:id', (req: express.Request, res: express.Response, next: any) => {
+router.get('/:id', requireAuth, (req: express.Request, res: express.Response, next: any) => {
 
     var id = req.params.id;
 
@@ -68,14 +78,15 @@ router.get('/:id', (req: express.Request, res: express.Response, next: any) => {
             //show the edit view
             res.render('users/edit', {
                 title: 'User Details',
-                user: User
+                user: User,
+                displayName: req.user ? req.user.displayName : ''
             });
         }
     });
 });
 
 // POST edit page - update the selected user
-router.post('/:id', (req: express.Request, res: express.Response, next: any) => {
+router.post('/:id', requireAuth,(req: express.Request, res: express.Response, next: any) => {
 
     // grab the id from the url parameter
     var id = req.params.id;
@@ -96,13 +107,14 @@ router.post('/:id', (req: express.Request, res: express.Response, next: any) => 
             res.end(error);
         }
         else {
+            //if success update
             res.redirect('/users');
         }
     });
 });
 
 // GET delete user
-router.get('/delete/:id', (req: express.Request, res: express.Response, next: any) => {
+router.get('/delete/:id', requireAuth,(req: express.Request, res: express.Response, next: any) => {
 
     // get the id from the url
     var id = req.params.id;
